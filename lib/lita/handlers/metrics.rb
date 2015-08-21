@@ -36,15 +36,15 @@ module Lita
 
         self.class.statsd.increment(
           config.message_metric_name,
-          tags: fields.each.map { |k, v| "#{k}:#{v}" }
+          tags: fields.each.select { |k, v| k != :message }.map { |k, v| "#{k}:#{v}" }
         )
 
-        self.class.message_log.info(format_log(fields)) unless fields[:private_message?]
+        self.class.message_log.info(format_log(fields)) unless fields[:private_message]
       end
 
       def invalid_command(payload)
         fields = extract_fields(payload)
-        self.class.invalid_command_log.info(format_log(fields)) if !fields[:private_message?] && fields[:command?]
+        self.class.invalid_command_log.info(format_log(fields)) if !fields[:private_message] && fields[:command]
       end
 
       private
@@ -55,10 +55,11 @@ module Lita
         fields = {
           message: m.body,
           user: m.user.id,
-          room: m.source.room_object.id,
-          private_message?: m.source.private_message?,
-          command?: m.command?
+          private_message: m.source.private_message?,
+          command: m.command?
         }
+
+        fields[:room] = m.source.room_object.id unless fields[:private_message]
 
         h = payload[:handler]
         r = payload[:route]
