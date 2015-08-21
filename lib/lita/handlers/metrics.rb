@@ -60,7 +60,7 @@ module Lita
         return fields if h.nil? && r.nil?
 
         fields[:handler] = h.name
-        fields[:method] = r.callback.method_name
+        fields[:method] = r.callback.method_name || '(block)'
 
         fields
       end
