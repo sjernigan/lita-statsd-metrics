@@ -26,29 +26,47 @@ module Lita
       end
 
       def message(payload)
-        handler = payload[:handler]
-        route = payload[:route]
-        message = payload[:message]
-        robot = payload[:robot]
+        fields = extract_fields(payload)
 
         @@statsd.increment(
           config.message_metric_name,
-          tags: [
-            "handler:#{handler.name}",
-            "method:#{route.callback.method_name}",
-            "user:#{message.user.id}",
-            "room:#{message.source.room_object.id}",
-            "private_message:#{message.source.private_message?}",
-            "command:#{message.command?}",
-          ]
+          tags: fields.each.map { |k, v| "#{k}:#{v}" }
         )
 
-        @@message_log.info(message.body) unless message.source.private_message?
+        @@message_log.info(format_log(fields)) unless fields[:private_message?]
       end
 
       def invalid_command(payload)
-        message = payload[:message]
-        @@invalid_command_log.info(message.body) if !message.source.private_message? && message.command?
+        fields = extract_fields(payload)
+        @@invalid_command_log.info(format_log(fields)) if !fields[:private_message?] && fields[:command?]
+      end
+
+      private
+
+      def extract_fields(payload)
+        m = payload[:message]
+
+        fields = {
+          message: m.body,
+          user: m.user.id,
+          room: m.source.room_object.id,
+          private_message?: m.source.private_message?,
+          command?: m.command?
+        }
+
+        h = payload[:handler]
+        r = payload[:route]
+
+        return fields if h.nil? && r.nil?
+
+        fields[:handler] = h.name
+        fields[:method] = r.callback.method_name
+
+        fields
+      end
+
+      def format_log(fields)
+        CSV.generate_line([fields[:user], fields[:room], fields[:message]]).chomp
       end
     end
 
