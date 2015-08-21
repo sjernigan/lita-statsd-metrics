@@ -1,6 +1,12 @@
 module Lita
   module Handlers
     class Metrics < Handler
+      class << self
+        attr_accessor :statsd
+        attr_accessor :message_log
+        attr_accessor :invalid_command_log
+      end
+
       config :statsd_host, type: String, default: 'localhost'
       config :statsd_port, type: Integer, default: 8125
       config :message_log_path, default: STDOUT
@@ -14,12 +20,12 @@ module Lita
       on :unhandled_message, :invalid_command
 
       def setup(_payload)
-        @@statsd = Statsd.new(config.statsd_host, config.statsd_port)
-        @@message_log = ::Logger.new(
+        self.class.statsd = Statsd.new(config.statsd_host, config.statsd_port)
+        self.class.message_log = ::Logger.new(
           config.message_log_path,
           config.message_log_rotation
         )
-        @@invalid_command_log = ::Logger.new(
+        self.class.invalid_command_log = ::Logger.new(
           config.invalid_command_log_path,
           config.invalid_command_log_rotation
         )
@@ -28,17 +34,17 @@ module Lita
       def message(payload)
         fields = extract_fields(payload)
 
-        @@statsd.increment(
+        self.class.statsd.increment(
           config.message_metric_name,
           tags: fields.each.map { |k, v| "#{k}:#{v}" }
         )
 
-        @@message_log.info(format_log(fields)) unless fields[:private_message?]
+        self.class.message_log.info(format_log(fields)) unless fields[:private_message?]
       end
 
       def invalid_command(payload)
         fields = extract_fields(payload)
-        @@invalid_command_log.info(format_log(fields)) if !fields[:private_message?] && fields[:command?]
+        self.class.invalid_command_log.info(format_log(fields)) if !fields[:private_message?] && fields[:command?]
       end
 
       private
