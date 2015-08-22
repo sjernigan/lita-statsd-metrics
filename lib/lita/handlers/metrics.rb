@@ -9,10 +9,9 @@ module Lita
 
       config :statsd_host, type: String, default: 'localhost'
       config :statsd_port, type: Integer, default: 8125
-      config :message_log_path, default: STDOUT
-      config :message_log_rotation, type: String, default: 'daily'
-      config :invalid_command_log_path, default: STDOUT
-      config :invalid_command_log_rotation, type: String, default: 'weekly'
+      config :message_logger, default: STDOUT
+      config :invalid_command_logger, default: STDOUT
+      config :log_fields, default: [:user, :room, :message]
       config :message_metric_name, type: String, default: 'lita.messages'
 
       on :loaded, :setup
@@ -21,14 +20,8 @@ module Lita
 
       def setup(_payload)
         self.class.statsd = Statsd.new(config.statsd_host, config.statsd_port)
-        self.class.message_log = ::Logger.new(
-          config.message_log_path,
-          config.message_log_rotation
-        )
-        self.class.invalid_command_log = ::Logger.new(
-          config.invalid_command_log_path,
-          config.invalid_command_log_rotation
-        )
+        self.class.message_log = ::Logger.new(*arrayize(config.message_logger))
+        self.class.invalid_command_log = ::Logger.new(*arrayize(config.invalid_command_logger))
       end
 
       def message(payload)
@@ -48,6 +41,10 @@ module Lita
       end
 
       private
+
+      def arrayize(arg)
+        arg.is_a?(Array) ? arg : [arg]
+      end
 
       def extract_fields(payload)
         m = payload[:message]
@@ -73,7 +70,7 @@ module Lita
       end
 
       def format_log(fields)
-        CSV.generate_line([fields[:user], fields[:room], fields[:message]]).chomp
+        CSV.generate_line(arrayize(config.log_fields).each.map { |x| fields[x] }).chomp
       end
     end
 
