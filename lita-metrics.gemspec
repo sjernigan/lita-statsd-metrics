@@ -2,10 +2,10 @@ Gem::Specification.new do |spec|
   spec.name          = "lita-metrics"
   spec.version       = "0.1.0"
   spec.authors       = ["Tristan Chong"]
-  spec.email         = ["tristanchong@gmail.com"]
+  spec.email         = ["tristan@pagerduty.com"]
   spec.description   = "A Lita handler that tracks Lita usage metrics."
   spec.summary       = "A Lita handler that tracks Lita usage metrics."
-  spec.homepage      = "https://github.com/tristaneuan/lita-metrics"
+  spec.homepage      = "https://github.com/PagerDuty/lita-metrics"
   spec.license       = "MIT"
   spec.metadata      = { "lita_plugin_type" => "handler" }
 
