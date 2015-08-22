@@ -43,7 +43,7 @@ describe Lita::Handlers::Metrics, lita_handler: true do
   it { is_expected.to route_event(:unhandled_message).to(:invalid_command) }
 
   describe '#message' do
-    describe "statsd" do
+    describe 'statsd' do
       it 'increments the message counter for messages that match a route' do
         expect(described_class.statsd).to receive(:increment).with(
           'lita.messages',
@@ -89,7 +89,7 @@ describe Lita::Handlers::Metrics, lita_handler: true do
       end
     end
 
-    describe "message_log" do
+    describe 'message_log' do
       it 'logs messages that match a route' do
         expect(described_class.message_log).to receive(:info).with('U1234ABCD,C1234567890,message')
         send_message('message', as: john, from: general)
@@ -102,7 +102,7 @@ describe Lita::Handlers::Metrics, lita_handler: true do
 
       it 'does not log private messages' do
         expect(described_class.message_log).not_to receive(:info)
-        send_message('message', as: john, privately:true)
+        send_message('message', as: john, privately: true)
       end
     end
   end
@@ -121,6 +121,12 @@ describe Lita::Handlers::Metrics, lita_handler: true do
     it 'does not log unhandled commands sent as private messages' do
       expect(described_class.invalid_command_log).not_to receive(:info)
       send_command('foo', as: john, privately: true)
+    end
+
+    it 'allows the log fields to be configured' do
+      registry.config.handlers.metrics.log_fields = :message
+      expect(described_class.invalid_command_log).to receive(:info).with('foo')
+      send_command('foo', as: john, from: general)
     end
   end
 end
