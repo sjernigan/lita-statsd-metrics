@@ -41,13 +41,22 @@ end
 
 ## Usage
 
-Once the handler is configured, it will record metrics and logs without needing to be invoked explicitly by any commands. For example, if I send the command `/r/chatops` and [lita-snoo](https://github.com/tristaneuan/lita-snoo) is installed, the Datadog Agent will receive this:
+Once the handler is configured, it will record metrics and logs without needing to be invoked explicitly by any commands. For example, if I send the command `/r/chatops` and [lita-snoo](https://github.com/tristaneuan/lita-snoo) is installed, the StatsD server will receive this:
 ```
 lita.commands.valid:1|c|#user:1,private_message:false,command:true,room:shell,handler:Lita::Handlers::Snoo,method:subreddit
 ```
 ...and the log might look like this:
 ```
 I, [2015-08-21T17:45:33.761986 #81678]  INFO -- : 1,shell,/r/chatops
+```
+
+If I send the command `foo` and there is no handler installed that recognizes it, the StatsD server will receive this:
+```
+lita.commands.invalid:1|c|#user:1,private_message:false,command:true,room:shell
+```
+...and the log might look like this:
+```
+I, [2015-08-24T16:40:25.726132 #45705]  INFO -- : 1,shell,foo
 ```
 
 ## License
