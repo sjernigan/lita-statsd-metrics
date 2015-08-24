@@ -3,41 +3,50 @@ module Lita
     class Metrics < Handler
       class << self
         attr_accessor :statsd
-        attr_accessor :message_log
+        attr_accessor :valid_command_log
         attr_accessor :invalid_command_log
       end
 
       config :statsd_host, type: String, default: 'localhost'
       config :statsd_port, type: Integer, default: 8125
-      config :message_logger, default: STDOUT
+      config :valid_command_logger, default: STDOUT
       config :invalid_command_logger, default: STDOUT
+      config :valid_command_metric, type: String, default: 'lita.commands.valid'
+      config :invalid_command_metric, type: String, default: 'lita.commands.invalid'
       config :log_fields, default: [:user, :room, :message]
-      config :message_metric_name, type: String, default: 'lita.messages'
 
       on :loaded, :setup
-      on :message_dispatched, :message
+      on :message_dispatched, :valid_command
       on :unhandled_message, :invalid_command
 
       def setup(_payload)
         self.class.statsd = Statsd.new(config.statsd_host, config.statsd_port)
-        self.class.message_log = ::Logger.new(*arrayize(config.message_logger))
+        self.class.valid_command_log = ::Logger.new(*arrayize(config.valid_command_logger))
         self.class.invalid_command_log = ::Logger.new(*arrayize(config.invalid_command_logger))
       end
 
-      def message(payload)
+      def valid_command(payload)
         fields = extract_fields(payload)
 
         self.class.statsd.increment(
-          config.message_metric_name,
+          config.valid_command_metric,
           tags: fields.each.select { |k, v| k != :message }.map { |k, v| "#{k}:#{v}" }
         )
 
-        self.class.message_log.info(format_log(fields)) unless fields[:private_message]
+        self.class.valid_command_log.info(format_log(fields)) unless fields[:private_message]
       end
 
       def invalid_command(payload)
         fields = extract_fields(payload)
-        self.class.invalid_command_log.info(format_log(fields)) if !fields[:private_message] && fields[:command]
+
+        return unless fields[:command]
+
+        self.class.statsd.increment(
+          config.invalid_command_metric,
+          tags: fields.each.select { |k, v| k != :message }.map { |k, v| "#{k}:#{v}" }
+        )
+
+        self.class.invalid_command_log.info(format_log(fields)) unless fields[:private_message]
       end
 
       private
