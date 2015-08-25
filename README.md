@@ -1,6 +1,7 @@
 # lita-metrics
 
-[![Travis CI Build Status](https://magnum.travis-ci.com/PagerDuty/lita-metrics.svg?token=QtBaxCAw4U6BzbkJdzwa)](https://magnum.travis-ci.com/PagerDuty/lita-metrics)
+[![Build Status](https://travis-ci.org/PagerDuty/lita-metrics.png?branch=master)](https://travis-ci.org/PagerDuty/lita-metrics)
+[![Coverage Status](https://coveralls.io/repos/PagerDuty/lita-metrics/badge.png)](https://coveralls.io/r/PagerDuty/lita-metrics)
 
 **lita-metrics** is a handler for [Lita](https://github.com/jimmycuadra/lita) that keeps track of Lita usage metrics (e.g. users, rooms, handlers and methods triggered) using [Datadog](http://www.datadoghq.com/). It also logs messages that match valid chat routes, as well as attempted commands that failed to trigger any handlers.
 
