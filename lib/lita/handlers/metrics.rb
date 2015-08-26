@@ -30,7 +30,7 @@ module Lita
 
         self.class.statsd.increment(
           config.valid_command_metric,
-          tags: fields.each.select { |k, v| k != :message }.map { |k, v| "#{k}:#{v}" }
+          tags: fields.each.select { |k, _v| k != :message }.map { |k, v| "#{k}:#{v}" }
         )
 
         self.class.valid_command_log.info(format_log(fields)) unless fields[:private_message]
@@ -43,7 +43,7 @@ module Lita
 
         self.class.statsd.increment(
           config.invalid_command_metric,
-          tags: fields.each.select { |k, v| k != :message }.map { |k, v| "#{k}:#{v}" }
+          tags: fields.each.select { |k, _v| k != :message }.map { |k, v| "#{k}:#{v}" }
         )
 
         self.class.invalid_command_log.info(format_log(fields)) unless fields[:private_message]
@@ -55,6 +55,8 @@ module Lita
         arg.is_a?(Array) ? arg : [arg]
       end
 
+      # rubocop:disable Metrics/MethodLength
+      # Note: This could be refactored into smaller functions at some point
       def extract_fields(payload)
         m = payload[:message]
 
@@ -77,6 +79,7 @@ module Lita
 
         fields
       end
+      # rubocop:enable Metrics/MethodLength
 
       def format_log(fields)
         CSV.generate_line(arrayize(config.log_fields).each.map { |x| fields[x] }).chomp

@@ -1,0 +1,13 @@
+AbcSize:
+  Max: 22
+
+Documentation:
+  Exclude:
+    - lib/lita/handlers/metrics.rb
+
+FileName:
+  Exclude:
+    - lib/lita-metrics.rb
+
+LineLength:
+  Max: 120
