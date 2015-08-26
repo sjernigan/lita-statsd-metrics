@@ -12,5 +12,5 @@ require 'lita/handlers/metrics'
 
 Lita::Handlers::Metrics.template_root File.expand_path(
   File.join('..', '..', 'templates'),
- __FILE__
+  __FILE__
 )
