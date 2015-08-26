@@ -1,7 +1,11 @@
 # lita-metrics
 
-[![Build Status](https://travis-ci.org/PagerDuty/lita-metrics.png?branch=master)](https://travis-ci.org/PagerDuty/lita-metrics)
-[![Coverage Status](https://coveralls.io/repos/PagerDuty/lita-metrics/badge.png)](https://coveralls.io/r/PagerDuty/lita-metrics)
+[![Build Status](https://img.shields.io/travis/pagerduty/lita-metrics/master.svg)](https://travis-ci.org/pagerduty/lita-metrics)
+[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://tldrlegal.com/license/mit-license)
+[![RubyGems :: RMuh Gem Version](http://img.shields.io/gem/v/lita-metrics.svg)](https://rubygems.org/gems/lita-metrics)
+[![Coveralls Coverage](https://img.shields.io/coveralls/pagerduty/lita-metrics/master.svg)](https://coveralls.io/r/pagerduty/lita-metrics)
+[![Code Climate](https://img.shields.io/codeclimate/github/pagerduty/lita-metrics.svg)](https://codeclimate.com/github/pagerduty/lita-metrics)
+[![Gemnasium](https://img.shields.io/gemnasium/pagerduty/lita-metrics.svg)](https://gemnasium.com/PagerDuty/lita-metrics)
 
 **lita-metrics** is a handler for [Lita](https://github.com/jimmycuadra/lita) that keeps track of Lita usage metrics (e.g. users, rooms, handlers and methods triggered) using [Datadog](http://www.datadoghq.com/). It also logs messages that match valid chat routes, as well as attempted commands that failed to trigger any handlers.
 
