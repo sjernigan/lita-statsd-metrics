@@ -11,6 +11,7 @@ describe Lita::Handlers::Metrics, lita_handler: true do
 
       route(/message/, :test_message)
       route(/command/, :test_command, command: true)
+      route(/ignore/, :test_ignore)
 
       def test_message(response)
         response.reply('message')
@@ -20,21 +21,20 @@ describe Lita::Handlers::Metrics, lita_handler: true do
         response.reply('command')
       end
 
+      def test_ignore(response)
+      end
+
       route(/block/) do |response|
         response.reply('block')
       end
     end
   end
 
-  let(:john) do
-    Lita::User.create('U1234ABCD', name: 'John', mention_name: 'john')
-  end
+  let(:john) { Lita::User.create('U1234ABCD', name: 'John', mention_name: 'john') }
 
-  let(:general) do
-    Lita::Room.create_or_update('C1234567890', name: 'general')
-  end
+  let(:general) { Lita::Room.create_or_update('C1234567890', name: 'general') }
 
-  before do
+  before(:each) do
     robot.trigger(:loaded)
     registry.register_handler(test_handler)
   end
@@ -81,6 +81,12 @@ describe Lita::Handlers::Metrics, lita_handler: true do
           tags: anything
         )
         send_command('command', as: john, from: general)
+      end
+
+      it 'ignores methods specified in the configuration' do
+        registry.config.handlers.metrics.ignored_methods = %w(Test#test_ignore)
+        expect(described_class.statsd).not_to receive(:increment)
+        send_message('ignore')
       end
     end
 
