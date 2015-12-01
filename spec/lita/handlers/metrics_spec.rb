@@ -13,19 +13,16 @@ describe Lita::Handlers::Metrics, lita_handler: true do
       route(/command/, :test_command, command: true)
       route(/ignore/, :test_ignore)
 
-      def test_message(response)
-        response.reply('message')
+      def test_message(_response)
       end
 
-      def test_command(response)
-        response.reply('command')
+      def test_command(_response)
       end
 
-      def test_ignore(response)
+      def test_ignore(_response)
       end
 
-      route(/block/) do |response|
-        response.reply('block')
+      route(/block/) do |_response|
       end
     end
   end
