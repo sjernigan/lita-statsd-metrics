@@ -33,6 +33,7 @@ gem "lita-metrics"
   * `:command` - A boolean indicating whether the message was a command
   * `:handler` - The name of the handler invoked. Not available for invalid commands
   * `:method` - The name of the handler method invoked. Not available for invalid commands
+* `ignored_methods` - An array of methods that should be ignored. Useful for handler methods that "overhear" messages not necessarily directed at the bot. Default: `[]`
 
 ``` ruby
 Lita.configure do |config|
@@ -43,6 +44,7 @@ Lita.configure do |config|
   config.handlers.metrics.valid_command_metric = 'lita.messages.all'
   config.handlers.metrics.invalid_command_metric = 'lita.messages.failed'
   config.handlers.metrics.log_fields = [:user, :handler, :message]
+  config.handlers.metrics.ignored_methods = ['Jira#ambient']
 end
 ```
 

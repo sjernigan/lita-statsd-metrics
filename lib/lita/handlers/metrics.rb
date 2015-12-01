@@ -14,6 +14,7 @@ module Lita
       config :valid_command_metric, type: String, default: 'lita.commands.valid'
       config :invalid_command_metric, type: String, default: 'lita.commands.invalid'
       config :log_fields, default: [:user, :room, :message]
+      config :ignored_methods, type: Array, default: []
 
       on :loaded, :setup
       on :message_dispatched, :valid_command
@@ -27,6 +28,8 @@ module Lita
 
       def valid_command(payload)
         fields = extract_fields(payload)
+
+        return if ignore?(fields)
 
         self.class.statsd.increment(
           config.valid_command_metric,
@@ -83,6 +86,17 @@ module Lita
 
       def format_log(fields)
         CSV.generate_line(arrayize(config.log_fields).each.map { |x| fields[x] }).chomp
+      end
+
+      def ignore?(fields)
+        config.ignored_methods.map { |string| string.split('#') }.each do |handler, method|
+          return true if same?(fields[:handler], "Lita::Handlers::#{handler}") && same?(fields[:method], method)
+        end
+        false
+      end
+
+      def same?(a, b)
+        a.to_s.downcase == b.to_s.downcase
       end
     end
 
