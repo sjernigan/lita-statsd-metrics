@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-metrics'
-  spec.version       = '0.1.0'
+  spec.version       = '0.1.1'
   spec.authors       = ['Tristan Chong']
   spec.email         = ['tristan@pagerduty.com']
   spec.description   = 'A Lita handler that tracks Lita usage metrics.'
