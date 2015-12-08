@@ -1,11 +1,12 @@
 # lita-statsd-metrics
 
-[![Build Status](https://img.shields.io/travis/PagerDuty/lita-metrics/master.svg)](https://travis-ci.org/PagerDuty/lita-metrics)
+[![Build Status](https://img.shields.io/travis/PagerDuty/lita-metrics/master.svg)](https://travis-ci.org/sjernigan/lita-statsd-metrics)
 [![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://tldrlegal.com/license/mit-license)
-[![RubyGems :: RMuh Gem Version](http://img.shields.io/gem/v/lita-metrics.svg)](https://rubygems.org/gems/lita-metrics)
-[![Coveralls Coverage](https://img.shields.io/coveralls/PagerDuty/lita-metrics/master.svg)](https://coveralls.io/r/PagerDuty/lita-metrics)
-[![Code Climate](https://img.shields.io/codeclimate/github/PagerDuty/lita-metrics.svg)](https://codeclimate.com/github/PagerDuty/lita-metrics)
-[![Gemnasium](https://img.shields.io/gemnasium/PagerDuty/lita-metrics.svg)](https://gemnasium.com/PagerDuty/lita-metrics)
+
+todo RubyGems :: RMuh Gem Version
+todo Coveralls Coverage
+todo Code Climate
+todo Gemnasium
 
 **lita-statsd-metrics** is a handler for [Lita](https://github.com/jimmycuadra/lita) that keeps track of Lita usage metrics (e.g. users, rooms, handlers and methods triggered) using statsd. It's based on a Datadog specific handler at [lita-metrics](https://github.com/PagerDuty/lita-metrics). The metrics are reported different due to statsd lack of tags.  It also logs messages that match valid chat routes, as well as attempted commands that failed to trigger any handlers.
 
