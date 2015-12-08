@@ -10,7 +10,7 @@ require 'statsd'
 
 require 'lita/handlers/statsd_metrics'
 
-Lita::Handlers::Metrics.template_root File.expand_path(
+Lita::Handlers::StatsdMetrics.template_root File.expand_path(
   File.join('..', '..', 'templates'),
   __FILE__
 )

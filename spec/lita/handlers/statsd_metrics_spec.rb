@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Lita::Handlers::Metrics, lita_handler: true do
+describe Lita::Handlers::StatsdMetrics, lita_handler: true do
   let(:test_handler) do
     Class.new do
       extend Lita::Handler::ChatRouter
