@@ -1,6 +1,6 @@
 module Lita
   module Handlers
-    class Metrics < Handler
+    class StatsdMetrics < Handler
       class << self
         attr_accessor :statsd
         attr_accessor :valid_command_log
@@ -11,8 +11,8 @@ module Lita
       config :statsd_port, type: Integer, default: 8125
       config :valid_command_logger, default: STDOUT
       config :invalid_command_logger, default: STDOUT
-      config :valid_command_metric, type: String, default: 'lita.commands.valid'
-      config :invalid_command_metric, type: String, default: 'lita.commands.invalid'
+      config :command_metric_path, type: String, default: 'lita'
+      #config :invalid_command_metric, type: String, default: 'lita.commands.invalid'
       config :log_fields, default: [:user, :room, :message]
       config :ignored_methods, type: Array, default: []
 
@@ -26,15 +26,20 @@ module Lita
         self.class.invalid_command_log = ::Logger.new(*arrayize(config.invalid_command_logger))
       end
 
+      def safe(str)
+        return str.gsub(" ","_").gsub(".","_")
+      end
+
       def valid_command(payload)
         fields = extract_fields(payload)
 
         return if ignore?(fields)
 
-        self.class.statsd.increment(
-          config.valid_command_metric,
-          tags: fields.each.select { |k, _v| k != :message }.map { |k, v| "#{k}:#{v}" }
-        )
+        metric_name = "config.command_metric_path.command.valid.#{fields[:Handler].gsub('Lita::Handlers::','')}.#{safe(fields[:method])}.#{safe(fields[:user])}"
+        self.class.statsd.increment(metric_name)
+
+        metric_name = "config.command_metric_path.room.#{fields[:Handler].gsub('Lita::Handlers::','')}.#{safe(fields[:method])}"
+        self.class.statsd.increment(metric_name)
 
         self.class.valid_command_log.info(format_log(fields)) unless fields[:private_message]
       end
@@ -44,10 +49,8 @@ module Lita
 
         return unless fields[:command]
 
-        self.class.statsd.increment(
-          config.invalid_command_metric,
-          tags: fields.each.select { |k, _v| k != :message }.map { |k, v| "#{k}:#{v}" }
-        )
+        metric_name = "config.command_metric_path.command.invalid.#{safe(fields[:method])}.#{safe(fields[:user])}"
+        self.class.statsd.increment(metric_name)
 
         self.class.invalid_command_log.info(format_log(fields)) unless fields[:private_message]
       end
@@ -100,6 +103,6 @@ module Lita
       end
     end
 
-    Lita.register_handler(Metrics)
+    Lita.register_handler(StatsdMetrics)
   end
 end

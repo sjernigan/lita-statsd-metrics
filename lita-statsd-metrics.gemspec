@@ -1,11 +1,11 @@
 Gem::Specification.new do |spec|
-  spec.name          = 'lita-metrics'
-  spec.version       = '0.1.1'
-  spec.authors       = ['Tristan Chong']
-  spec.email         = ['tristan@pagerduty.com']
-  spec.description   = 'A Lita handler that tracks Lita usage metrics.'
+  spec.name          = 'lita-statsd-metrics'
+  spec.version       = '0.1'
+  spec.authors       = ['Steve Jernigan','Tristan Chong']
+  spec.email         = ['steve.jernigan@gmail.com']
+  spec.description   = 'A Lita handler that tracks Lita usage metrics in statsd.'
   spec.summary       = spec.description
-  spec.homepage      = 'https://github.com/PagerDuty/lita-metrics'
+  spec.homepage      = 'https://github.com/sjernigan/lita-statsd-metrics'
   spec.license       = 'MIT'
   spec.metadata      = { 'lita_plugin_type' => 'handler' }
 
@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'lita', '>= 4.6'
-  spec.add_runtime_dependency 'dogstatsd-ruby', '~> 1.5.0'
+  spec.add_runtime_dependency 'statsd-ruby', '~> 1.2.1'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'pry-byebug'

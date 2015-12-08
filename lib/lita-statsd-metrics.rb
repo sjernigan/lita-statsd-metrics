@@ -8,7 +8,7 @@ require 'csv'
 require 'logger'
 require 'statsd'
 
-require 'lita/handlers/metrics'
+require 'lita/handlers/statsd_metrics'
 
 Lita::Handlers::Metrics.template_root File.expand_path(
   File.join('..', '..', 'templates'),
