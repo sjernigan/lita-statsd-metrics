@@ -6,7 +6,7 @@ SimpleCov.formatters = [
 ]
 SimpleCov.start { add_filter '/spec/' }
 
-require 'lita-metrics'
+require 'lita-statsd-metrics'
 require 'lita/rspec'
 
 Lita.version_3_compatibility_mode = false

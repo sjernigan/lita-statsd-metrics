@@ -3,11 +3,11 @@ AbcSize:
 
 Documentation:
   Exclude:
-    - lib/lita/handlers/metrics.rb
+    - lib/lita/handlers/statsd_metrics.rb
 
 FileName:
   Exclude:
-    - lib/lita-metrics.rb
+    - lib/lita-statsd-metrics.rb
 
 LineLength:
   Max: 120
