@@ -37,13 +37,13 @@ gem "lita-statsd-metrics"
 
 ``` ruby
 Lita.configure do |config|
-  config.handlers.metrics.statsd_host = 'localhost'
-  config.handlers.metrics.statsd_port = 8125
-  config.handlers.metrics.valid_command_logger = '/var/log/lita/messages.log', 'daily'
-  config.handlers.metrics.invalid_command_logger = '/var/log/lita/attempted_commands.log', 10, 1024000
-  config.handlers.metrics.valid_command_metric = 'lita'
-  config.handlers.metrics.log_fields = [:user, :handler, :message]
-  config.handlers.metrics.ignored_methods = ['Jira#ambient']
+  config.handlers.statsd_metrics.statsd_host = 'localhost'
+  config.handlers.statsd_metrics.statsd_port = 8125
+  config.handlers.statsd_metrics.valid_command_logger = '/var/log/lita/messages.log', 'daily'
+  config.handlers.statsd_metrics.invalid_command_logger = '/var/log/lita/attempted_commands.log', 10, 1024000
+  config.handlers.statsd_metrics.valid_command_metric = 'lita'
+  config.handlers.statsd_metrics.log_fields = [:user, :handler, :message]
+  config.handlers.statsd_metrics.ignored_methods = ['Jira#ambient']
 end
 ```
 
