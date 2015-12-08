@@ -51,8 +51,8 @@ end
 
 Once the handler is configured, it will record metrics and logs without needing to be invoked explicitly by any commands. For example, if I send the command `roll` from user SteveJernigan and [lita-dice](https://github.com/tristaneuan/lita-dice) is installed, the StatsD server will receive these:
 ```
-lita.commands.valid.Dice.roll.SteveJernigan:1|c
-lita.commands.room.devops:1|c
+lita.command.valid.Dice.roll.SteveJernigan:1|c
+lita.command.room.devops:1|c
 ```
 ...and the log might look like this:
 ```
@@ -61,7 +61,7 @@ I, [2015-08-21T17:45:33.761986 #81678]  INFO -- : 1,shell,roll
 
 If I send the command `foo` and there is no handler installed that recognizes it, the StatsD server will receive this:
 ```
-lita.commands.invalid:1|c|#user:1,private_message:false,command:true,room:shell
+lita.commands.invalid.SteveJernigan:1|c
 ```
 ...and the log might look like this:
 ```
