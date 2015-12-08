@@ -1,7 +1,7 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-statsd-metrics'
   spec.version       = '0.1'
-  spec.authors       = ['Steve Jernigan','Tristan Chong']
+  spec.authors       = ['Steve Jernigan', 'Tristan Chong']
   spec.email         = ['steve.jernigan@gmail.com']
   spec.description   = 'A Lita handler that tracks Lita usage metrics in statsd.'
   spec.summary       = spec.description
