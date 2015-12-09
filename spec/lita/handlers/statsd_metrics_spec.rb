@@ -34,7 +34,8 @@ describe Lita::Handlers::StatsdMetrics, lita_handler: true do
   before(:each) do
     robot.trigger(:loaded)
     registry.register_handler(test_handler)
-    registry.config.handlers.statsd_metrics.command_metric_path = 'lita'
+    registry.config.handlers.statsd_metrics.valid_metric_path = 'lita.command.valid.#{handler}.#{method}.#{user}'
+    registry.config.handlers.statsd_metrics.invalid_metric_path = 'lita.command.invalid.#{user}'
   end
 
   it { is_expected.to route_event(:message_dispatched).to(:valid_command) }
@@ -45,26 +46,34 @@ describe Lita::Handlers::StatsdMetrics, lita_handler: true do
       it 'increments the valid command counter for messages that match a route' do
         expect(described_class.statsd).to receive(:increment).with(
           'lita.command.valid.Test.test_message.U1234ABCD')
-        expect(described_class.statsd).to receive(:increment).with(
-          'lita.room.C1234567890.Test.test_message')
         send_message('message', as: john, from: general)
       end
 
       it 'counts blocks correctly' do
         expect(described_class.statsd).to receive(:increment).with(
-          'lita.command.valid.Test.(block).U1234ABCD')
-        expect(described_class.statsd).to receive(:increment).with(
-          'lita.room.C1234567890.Test.(block)')
+          'lita.command.valid.Test._block_.U1234ABCD')
         send_message('block', as: john, from: general)
       end
 
-      it 'allows the valid command metric name to be configured' do
-        registry.config.handlers.statsd_metrics.command_metric_path = 'elsewhere'
+      it 'allows the valid metric path to be configured' do
+        registry.config.handlers.statsd_metrics.valid_metric_path = 'elsewhere.#{room}.#{message}.#{pattern}'
         expect(described_class.statsd).to receive(:increment).with(
-          'elsewhere.command.valid.Test.test_command.U1234ABCD')
+          'elsewhere.C1234567890.command_go_make_me_a_sandwich.__-mix_command_')
+        send_command('command go make me a sandwich', as: john, from: general)
+      end
+
+      # it 'allows the valid metric path to be configured with message parts via array substring semantics' do
+      #  registry.config.handlers.statsd_metrics.valid_metric_path = 'something.#{message,2,3}'
+      #  expect(described_class.statsd).to receive(:increment).with(
+      #    'something.command_go')
+      #  send_command('command go make me a sandwich', as: john, from: general)
+      # end
+
+      it 'allows the valid metric path to be configured with message parts via match semantics' do
+        registry.config.handlers.statsd_metrics.valid_metric_path = 'something.#{message/\S* ([\S]*) \S* ([\S]*)/}'
         expect(described_class.statsd).to receive(:increment).with(
-          'elsewhere.room.C1234567890.Test.test_command')
-        send_command('command', as: john, from: general)
+          'something.go_me')
+        send_command('command go make me a sandwich', as: john, from: general)
       end
 
       it 'ignores methods specified in the configuration' do
@@ -112,9 +121,9 @@ describe Lita::Handlers::StatsdMetrics, lita_handler: true do
       end
 
       it 'allows the invalid command metric name to be configured' do
-        registry.config.handlers.statsd_metrics.command_metric_path = 'failed'
+        registry.config.handlers.statsd_metrics.invalid_metric_path = 'lita.invalid.#{user}.#{command}'
         expect(described_class.statsd).to receive(:increment).with(
-          'failed.command.invalid.U1234ABCD')
+          'lita.invalid.U1234ABCD.true')
         send_command('foo', as: john, from: general)
       end
     end

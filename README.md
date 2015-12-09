@@ -25,7 +25,16 @@ gem "lita-statsd-metrics"
 * `statsd_port`- Your Statsd server's port. Default: `8125`
 * `valid_command_logger` - [Logger options](http://ruby-doc.org/stdlib-2.2.0/libdoc/logger/rdoc/Logger.html#label-How+to+create+a+logger) for recording messages that match routes. Default: `STDOUT`
 * `invalid_command_logger` - Logger options for recording failed commands. Default: `STDOUT`
-* `command_metric_path` - The root of the path . Default: `'lita'`
+* `valid_metric_path` - The root of the path.  The following fields will be replaced in the template. Default: `'lita.command.valid.#{handler}.#{method}.#{user}'`
+  * `user` - ID of the user who sent the message
+  * `room` - ID of the room in which the message was sent
+  * `message` - The message text
+    * The message can be followed by a regex with capture groups.  The captured groups are joined together with an underscore.  For example `#{message/([\S]*)\s?([\S]*)?/}` will match the command and the first argument if there is one.  
+  * `command` - A boolean indicating whether the message was a command
+  * `handler` - The name of the handler invoked. Not available for invalid commands
+  * `method` - The name of the handler method invoked. Not available for invalid commands
+  * `pattern` - The regex pattern matched. Not available for invalid commands
+* `invalid_metric_path` - The root of the path.  The same fields as above can be used in the template except as noted. Default: `'lita.command.invalid.#{user}'`
 * `log_fields` - Fields to include in the logs; possible options are listed below. Default: `[:user, :room, :message]`
   * `:user` - ID of the user who sent the message
   * `:room` - ID of the room in which the message was sent
@@ -37,13 +46,14 @@ gem "lita-statsd-metrics"
 
 ``` ruby
 Lita.configure do |config|
-  config.handlers.statsd_metrics.statsd_host = 'localhost'
-  config.handlers.statsd_metrics.statsd_port = 8125
-  config.handlers.statsd_metrics.valid_command_logger = '/var/log/lita/messages.log', 'daily'
-  config.handlers.statsd_metrics.invalid_command_logger = '/var/log/lita/attempted_commands.log', 10, 1024000
-  config.handlers.statsd_metrics.valid_command_metric = 'lita'
-  config.handlers.statsd_metrics.log_fields = [:user, :handler, :message]
-  config.handlers.statsd_metrics.ignored_methods = ['Jira#ambient']
+  config.handlers.metrics.statsd_host = 'localhost'
+  config.handlers.metrics.statsd_port = 8125
+  config.handlers.metrics.valid_command_logger = '/var/log/lita/messages.log', 'daily'
+  config.handlers.metrics.invalid_command_logger = '/var/log/lita/attempted_commands.log', 10, 1024000
+  config.handlers.metrics.valid_metric_path = 'lita.command.valid.#{room}.#{handler}'
+  config.handlers.metrics.invalid_metric_path = 'lita.command.invalid.#{user}'
+  config.handlers.metrics.log_fields = [:user, :handler, :message]
+  config.handlers.metrics.ignored_methods = ['Jira#ambient']
 end
 ```
 
